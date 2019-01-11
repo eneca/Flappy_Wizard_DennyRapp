@@ -6,7 +6,9 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 
 public class GameScreen implements Screen {
 
@@ -15,13 +17,23 @@ public class GameScreen implements Screen {
 	OrthographicCamera camera;
 	
 	Sprite sprite,tower_sprite;
+	
+	private int score;
+	private String score_string;
+	BitmapFont yourBitmapFontName;
+	
+	CollisionBox player,tower_cb;
 	public GameScreen(FlappyGame game) {
 		this.game = game;
+		create_scoreboard();
+		
 		
 		sprite = new Sprite(game.harry);
 		int harry_width = (int)(game.harry.getWidth() * 0.125);
 		int harry_height = (int)(game.harry.getHeight() * 0.125);
 		sprite.setSize(harry_width, harry_height);
+		player = new CollisionBox(sprite.getX(),sprite.getY(),harry_width,harry_height);
+		
 		
 		tower_sprite = new Sprite(game.turm_gryffindor);
 		//int penis = Gdx.graphics.getWidth();
@@ -29,7 +41,8 @@ public class GameScreen implements Screen {
 		int tower_height = (int)(game.turm_gryffindor.getHeight() * 0.5);
 		tower_sprite.setSize(tower_width, tower_height);
 		tower_sprite.setPosition(1150, -250);
-		
+		tower_cb = new CollisionBox(tower_sprite.getX(),tower_sprite.getY(),tower_width,tower_height);
+
 		
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1280, 720);
@@ -40,7 +53,7 @@ public class GameScreen implements Screen {
 		// TODO Auto-generated method stub
 		Gdx.gl.glClearColor(0, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		System.out.println(Gdx.graphics.getWidth());
+		//System.out.println(Gdx.graphics.getWidth());
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 			if(sprite.getY()<= 550) {
 				sprite.translateY(10);
@@ -52,8 +65,11 @@ public class GameScreen implements Screen {
 			
 		}
 		
+		player.setPos(sprite.getX(),sprite.getY());
+		
 		if(tower_sprite.getX() < -10) {
 			tower_sprite.setPosition(1150, -250);
+			count_score_up();
 		}
 		tower_sprite.translateX(-5);
 		/*
@@ -61,6 +77,9 @@ public class GameScreen implements Screen {
 		int harry_height = (int)(game.harry.getHeight() * 0.125);
 		*/
 		game.batch.begin();
+		yourBitmapFontName.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+		yourBitmapFontName.draw(game.batch, score_string, 25, 100); 
+		
 		sprite.draw(game.batch);
 		tower_sprite.draw(game.batch);
 		/*
@@ -71,6 +90,11 @@ public class GameScreen implements Screen {
 				, harry_height
 			);
 			*/
+		tower_cb.setPos(tower_sprite.getX(), tower_sprite.getY());
+		
+		if(player.checkCollision(tower_cb)) {
+			System.out.println("COLLISION");
+		}
 		game.batch.end();
 		
 	}
@@ -103,5 +127,15 @@ public class GameScreen implements Screen {
 	public void dispose() {
 		// TODO Auto-generated method stub
 	}
+	public void create_scoreboard(){
+		score = 0;
+	    score_string = "score: 0";
+	    yourBitmapFontName = new BitmapFont();
 
+	}   
+	public void count_score_up() {
+		score++;
+		score_string = "score: " + score;
+	}
+    
 }
