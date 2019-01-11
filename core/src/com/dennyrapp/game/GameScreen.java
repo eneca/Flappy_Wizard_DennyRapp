@@ -51,6 +51,11 @@ public class GameScreen implements Screen {
 			}
 			
 		}
+		
+		if(tower_sprite.getX() < -10) {
+			tower_sprite.setPosition(1150, -250);
+		}
+		tower_sprite.translateX(-5);
 		/*
 		int harry_width = (int)(game.harry.getWidth() * 0.125);
 		int harry_height = (int)(game.harry.getHeight() * 0.125);
