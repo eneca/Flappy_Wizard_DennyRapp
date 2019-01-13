@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
+import java.util.concurrent.ThreadLocalRandom;
+
 
 public class GameScreen implements Screen {
 
@@ -16,13 +18,17 @@ public class GameScreen implements Screen {
 	
 	OrthographicCamera camera;
 	
-	Sprite sprite,tower_sprite;
+	Sprite sprite,tower_sprite1,tower_sprite2,tower_sprite3,tower_sprite4,dementor_sprite1;
+	
+	static int tower_speed = -5;
+	static int distance = 400;
+	static int start_x = 1150, start_y=-250;
 	
 	private int score;
 	private String score_string;
 	BitmapFont yourBitmapFontName;
 	
-	CollisionBox player,tower_cb;
+	CollisionBox player,tower_cb1,tower_cb2,tower_cb3,tower_cb4;
 	public GameScreen(FlappyGame game) {
 		this.game = game;
 		create_scoreboard();
@@ -35,14 +41,35 @@ public class GameScreen implements Screen {
 		player = new CollisionBox(sprite.getX(),sprite.getY(),harry_width,harry_height);
 		
 		
-		tower_sprite = new Sprite(game.turm_gryffindor);
+		tower_sprite1 = new Sprite(game.turm_gryffindor);
 		//int penis = Gdx.graphics.getWidth();
-		int tower_width = (int)(game.turm_gryffindor.getWidth() * 0.5);
-		int tower_height = (int)(game.turm_gryffindor.getHeight() * 0.5);
-		tower_sprite.setSize(tower_width, tower_height);
-		tower_sprite.setPosition(1150, -250);
-		tower_cb = new CollisionBox(tower_sprite.getX(),tower_sprite.getY(),tower_width,tower_height);
+		int tower_width1 = (int)(game.turm_gryffindor.getWidth() * 0.5);
+		int tower_height1 = (int)(game.turm_gryffindor.getHeight() * 0.5);
+		tower_sprite1.setSize(tower_width1, tower_height1);
+		tower_sprite1.setPosition(start_x, start_y);
+		tower_cb1 = new CollisionBox(tower_sprite1.getX(),tower_sprite1.getY(),tower_width1,tower_height1);
 
+		
+		tower_sprite2 = new Sprite(game.turm_huffelpuff);
+		tower_sprite2.setSize(tower_width1,tower_height1);
+		tower_sprite2.setPosition(tower_sprite1.getX()+distance, ThreadLocalRandom.current().nextInt(-600, -20-(int)sprite.getHeight() + 1));
+		tower_cb2 = new CollisionBox(tower_sprite2.getX(),tower_sprite2.getY(),tower_width1,tower_height1);
+		
+		tower_sprite3 = new Sprite(game.turm_ravenclaw);
+		tower_sprite3.setSize(tower_width1,tower_height1);
+		tower_sprite3.setPosition(tower_sprite2.getX()+distance, ThreadLocalRandom.current().nextInt(-600, -20-(int)sprite.getHeight() + 1));
+		tower_cb3 = new CollisionBox(tower_sprite3.getX(),tower_sprite3.getY(),tower_width1,tower_height1);
+		
+		tower_sprite4 = new Sprite(game.turm_slytherin);
+		tower_sprite4.setSize(tower_width1,tower_height1);
+		tower_sprite4.setPosition(tower_sprite3.getX()+distance, ThreadLocalRandom.current().nextInt(-600, -20-(int)sprite.getHeight() + 1));
+		tower_cb4 = new CollisionBox(tower_sprite4.getX(),tower_sprite4.getY(),tower_width1,tower_height1);
+		
+		dementor_sprite1= new Sprite(game.dementor);
+		int dementor_width = (int)(game.dementor.getWidth() * 0.125);
+		int dementor_height = (int)(game.dementor.getHeight() * 0.125);
+		dementor_sprite1.setSize(dementor_width, dementor_height);
+		dementor_sprite1.setPosition(tower_sprite1.getX(), tower_sprite1.getY()+tower_sprite1.getHeight()+sprite.getHeight()+10);
 		
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1280, 720);
@@ -56,22 +83,41 @@ public class GameScreen implements Screen {
 		//System.out.println(Gdx.graphics.getWidth());
 		if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
 			if(sprite.getY()<= 550) {
-				sprite.translateY(10);
+				sprite.translateY(5);
 			}
 		}else {
 			if(sprite.getY() > 0){
-				sprite.translateY(-1);
+				sprite.translateY(-2);
 			}
+			
 			
 		}
 		
 		player.setPos(sprite.getX(),sprite.getY());
+		//int randomNum = rand.nextInt((max - min) + 1) + min; max ist 0 min ist -600
 		
-		if(tower_sprite.getX() < -10) {
-			tower_sprite.setPosition(1150, -250);
+		if(tower_sprite1.getX() < -10) {
+			tower_sprite1.setPosition(tower_sprite4.getX()+distance, ThreadLocalRandom.current().nextInt(-600, -20-(int)sprite.getHeight() + 1));
+			dementor_sprite1.setPosition(tower_sprite1.getX(), tower_sprite1.getY()+tower_sprite1.getHeight()+sprite.getHeight()+10);
 			count_score_up();
 		}
-		tower_sprite.translateX(-5);
+		if(tower_sprite2.getX() < -10) {
+			tower_sprite2.setPosition(tower_sprite1.getX()+distance, ThreadLocalRandom.current().nextInt(-600, -20-(int)sprite.getHeight() + 1));
+			count_score_up();
+		}
+		if(tower_sprite3.getX() < -10) {
+			tower_sprite3.setPosition(tower_sprite2.getX()+distance, ThreadLocalRandom.current().nextInt(-600, -20-(int)sprite.getHeight() + 1));
+			count_score_up();
+		}
+		if(tower_sprite4.getX() < -10) {
+			tower_sprite4.setPosition(tower_sprite3.getX()+distance, ThreadLocalRandom.current().nextInt(-600, -20-(int)sprite.getHeight()  + 1)); //+1 fuer inklusiv
+			count_score_up();
+		}
+		tower_sprite1.translateX(tower_speed);
+		tower_sprite2.translateX(tower_speed);
+		tower_sprite3.translateX(tower_speed);
+		tower_sprite4.translateX(tower_speed);
+		dementor_sprite1.translateX(tower_speed);
 		/*
 		int harry_width = (int)(game.harry.getWidth() * 0.125);
 		int harry_height = (int)(game.harry.getHeight() * 0.125);
@@ -81,7 +127,11 @@ public class GameScreen implements Screen {
 		yourBitmapFontName.draw(game.batch, score_string, 25, 100); 
 		
 		sprite.draw(game.batch);
-		tower_sprite.draw(game.batch);
+		tower_sprite1.draw(game.batch);
+		tower_sprite2.draw(game.batch);
+		tower_sprite3.draw(game.batch);
+		tower_sprite4.draw(game.batch);
+		dementor_sprite1.draw(game.batch);
 		/*
 		game.batch.draw(game.harry
 				, camera.viewportWidth / 2 - harry_width / 2
@@ -90,11 +140,14 @@ public class GameScreen implements Screen {
 				, harry_height
 			);
 			*/
-		tower_cb.setPos(tower_sprite.getX(), tower_sprite.getY());
-		
-		if(player.checkCollision(tower_cb)) {
+		tower_cb1.setPos(tower_sprite1.getX(), tower_sprite1.getY());
+		tower_cb2.setPos(tower_sprite2.getX(), tower_sprite2.getY());
+		tower_cb3.setPos(tower_sprite3.getX(), tower_sprite3.getY());
+		tower_cb4.setPos(tower_sprite4.getX(), tower_sprite4.getY());
+		if(player.checkCollision(tower_cb1)||player.checkCollision(tower_cb2)||player.checkCollision(tower_cb3)||player.checkCollision(tower_cb4)) {
 			System.out.println("COLLISION");
 		}
+		//System.out.println(tower_sprite4.getX());
 		game.batch.end();
 		
 	}
@@ -136,6 +189,5 @@ public class GameScreen implements Screen {
 	public void count_score_up() {
 		score++;
 		score_string = "score: " + score;
-	}
-    
+	}    
 }

@@ -1,5 +1,10 @@
 package com.dennyrapp.game;
-
+/**
+ * 
+ * @author Denny
+ *	ist das überhaupt nötig ? sollte auch mit normalen sprites gehen
+ *	man muss nur die checkCollision benutzen
+ */
 public class CollisionBox {
 	public float x,y;
 	public int width,height;
